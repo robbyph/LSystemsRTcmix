@@ -2,6 +2,7 @@ using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
+using Bach.Model;
 
 
 namespace LSystemsDemo
@@ -13,8 +14,10 @@ namespace LSystemsDemo
         private PointF currentGraphicalPosition;
         private Stack<(PointF, float)> stack = new Stack<(PointF, float)>(); // Stack to save state
 
-        //create a class called preset, which contains a string called axiom and a Dictionary<char, string> called rules
-        class Preset
+
+
+    //create a class called preset, which contains a string called axiom and a Dictionary<char, string> called rules
+    class Preset
         {
             public string axiom;
             public Dictionary<char, string> rules;
@@ -72,7 +75,16 @@ namespace LSystemsDemo
             //Get the value of the numeric up down for the amount of iterations
             int iterations = (int)IterationsNumericUpDown.Value;
             int preset = presetSelect;
-      
+
+            //clear the musical events list
+            musicalEvents.Clear();
+
+
+            foreach (var formula in Registry.ScaleFormulas)
+            {
+                Console.WriteLine($"Scale name '{formula.Name}', Intervals: '{formula.Intervals}'");
+            }
+
             try
             {
                 selectedPreset = presets[preset];
