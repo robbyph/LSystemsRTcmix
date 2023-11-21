@@ -147,7 +147,8 @@ namespace LSystemsDemo
                         if (IsTerminalSegment(lSystem, i))
                         {
                             DrawLeaf(graphics, currentPosition);
-                            musicalEvents.Add("i \"WAVETABLE\", 0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5");
+                            //add a musical event to the musical events list
+                            musicalEvents.Add("WAVETABLE(0.00, 0.50, 2500, 8.00, .5, ampenv)");
                         }
                         break;
                     case '+': // branch right
