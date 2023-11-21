@@ -10,8 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="modules\" />
-    <ProjectReference Include="./modules/Bach/Bach.sln" />
+    <Reference Include="Bach.Model">
+      <HintPath>..\Libraries\Bach-main\bin\Release\net7.0\Bach.Model.dll</HintPath>
+    </Reference>
   </ItemGroup>
-
 </Project>
