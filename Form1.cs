@@ -13,7 +13,7 @@ namespace LSystemsDemo
         private PointF currentGraphicalPosition;
         private Stack<(PointF, float)> stack = new Stack<(PointF, float)>(); // Stack to save state
 
-        private string axiom = "F";  // Hardcoded axioms
+        private string axiom = "F";   // Hardcoded axioms
         Dictionary<char, string>[] rulePresets = [
                 new Dictionary<char, string>{
                     { 'F', "FF+[+F-F-F]-[-F+F+F]" }
