@@ -13,31 +13,41 @@ namespace LSystemsDemo
         private PointF currentGraphicalPosition;
         private Stack<(PointF, float)> stack = new Stack<(PointF, float)>(); // Stack to save state
 
-        private string axiom = "F";   // Hardcoded axioms
-        Dictionary<char, string>[] rulePresets = [
-                new Dictionary<char, string>{
-                    { 'F', "FF+[+F-F-F]-[-F+F+F]" }
-                },
-                new Dictionary<char, string>{
-                        {'F', "F[+F]F[-F]F" }
-                    },
-                new Dictionary<char, string>{
-                        {'F', "F[+F][-F][F]" }
-                    },
-                new Dictionary<char, string>{
-                        {'F', "F[+F-F][-F+F][F]" }
-                    },
-                new Dictionary<char, string>
-                {
-                        {'F', "F[+F]F[-F][F]" }
-                    },
-                new Dictionary<char, string>
-                {
-                        {'F', "F[+F]F[-F][F][+F]F[-F][F]" }
-                    },
-            ];
+        //create a class called preset, which contains a string called axiom and a Dictionary<char, string> called rules
+        class Preset
+        {
+            public string axiom;
+            public Dictionary<char, string> rules;
 
-        Dictionary<char, string> selectedPreset;
+            //constructor
+            public Preset(string axiom, Dictionary<char, string> rules)
+            {
+                this.axiom = axiom;
+                this.rules = rules;
+            }
+        }
+
+        //create an array of preset objects, populated with the hardcoded presets
+        readonly Preset[] presets = new Preset[]
+        {
+            new Preset("F", new Dictionary<char, string> { { 'F', "F[+F]F[-F]F" } }),
+            new Preset("F", new Dictionary<char, string> { { 'F', "F[+F]F[-F][F]" } }),
+            new Preset("F", new Dictionary<char, string> { { 'F', "FF-[-F+F+F]+[+F-F-F]" } }),
+            new Preset("F", new Dictionary<char, string> { { 'F', "FF+[+F-F-F]-[-F+F+F]" } }),
+            new Preset("F", new Dictionary<char, string> { { 'F', "F[+FF][-FF]F[-F][+F]F" } }),
+            new Preset("F", new Dictionary<char, string> { { 'F', "F[+F]F[-F][F]" } }),
+            new Preset("F", new Dictionary<char, string> { { 'F', "F[+F][-F][F]" } }),
+            new Preset("F", new Dictionary<char, string> { { 'F', "F[+F-F][-F+F][F]" } }),
+            new Preset("F", new Dictionary<char, string> { { 'F', "F[+F]F[-F][F][+F]F[-F][F]" } }),
+            new Preset("F", new Dictionary<char, string> { { 'F', "F[+F]F[-F][F]" } }),
+            new Preset("F", new Dictionary<char, string> { { 'F', "F[+F]F[-F][F]" } }),
+            new Preset("F", new Dictionary<char, string> { { 'F', "F[+F]F[-F][F]" } }),
+            new Preset("F", new Dictionary<char, string> { { 'F', "F[+F]F[-F][F]" } })
+        };  
+
+        Preset selectedPreset = 
+            new Preset("F", new Dictionary<char, string> { { 'F', "F[+F]F[-F][F]" } });
+
         private float branchLength = 20;
         private float branchAngle = 30;
         private float branchWidth = 1;
@@ -63,7 +73,7 @@ namespace LSystemsDemo
       
             try
             {
-                selectedPreset = rulePresets[preset];
+                selectedPreset = presets[preset];
             }
             catch (Exception)
             {
@@ -72,7 +82,7 @@ namespace LSystemsDemo
             }
 
             //Generate the L-System
-            string lSystem = GenerateLSystem(axiom, iterations);
+            string lSystem = GenerateLSystem(selectedPreset.axiom, iterations);
             lastGeneratedLSystem = lSystem;
 
             graphics.Clear(Color.White);
@@ -92,9 +102,9 @@ namespace LSystemsDemo
                 StringBuilder nextResult = new StringBuilder();
                 foreach (char c in result)
                 {
-                    if (selectedPreset.ContainsKey(c))
+                    if (selectedPreset.rules.ContainsKey(c))
                     {
-                        nextResult.Append(selectedPreset[c]);
+                        nextResult.Append(selectedPreset.rules[c]);
                     }
                     else
                     {
@@ -304,7 +314,7 @@ namespace LSystemsDemo
         private void presetsTrackbar_Scroll(object sender, EventArgs e)
         {
             presetSelect = presetsTrackbar.Value;
-            string lSystem = GenerateLSystem(axiom, (int)IterationsNumericUpDown.Value);
+            string lSystem = GenerateLSystem(selectedPreset.axiom, (int)IterationsNumericUpDown.Value);
             lastGeneratedLSystem = lSystem;
             graphics.Clear(Color.White);
             RenderLSystem(lastGeneratedLSystem);
