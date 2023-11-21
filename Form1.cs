@@ -56,6 +56,8 @@ namespace LSystemsDemo
 
         string lastGeneratedLSystem = "";
 
+        List<string> musicalEvents = new List<string>();
+
         public Form1()
         {
             InitializeComponent();
@@ -145,6 +147,7 @@ namespace LSystemsDemo
                         if (IsTerminalSegment(lSystem, i))
                         {
                             DrawLeaf(graphics, currentPosition);
+                            musicalEvents.Add("i \"WAVETABLE\", 0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5");
                         }
                         break;
                     case '+': // branch right
@@ -298,6 +301,13 @@ namespace LSystemsDemo
             writer.WriteLine("rtsetparams(44100,2)");
             writer.WriteLine("load(\"WAVETABLE\")");
             writer.WriteLine("ampenv = maketable(\"wave\", 1000, \"saw\")");
+            /*writer.WriteLine("freqenv = maketable(\"wave\", 1000, \"saw\")");
+            writer.WriteLine("amp = 0.5");
+            writer.WriteLine("freq = 440");*/
+            foreach (string s in musicalEvents)
+            {
+                writer.WriteLine(s);
+            }
             writer.Close();
 
         }
