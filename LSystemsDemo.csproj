@@ -9,4 +9,9 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="modules\" />
+    <ProjectReference Include="./modules/Bach/Bach.sln" />
+  </ItemGroup>
+
 </Project>
