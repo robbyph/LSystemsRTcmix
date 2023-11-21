@@ -27,6 +27,14 @@ namespace LSystemsDemo
                 new Dictionary<char, string>{
                         {'F', "F[+F-F][-F+F][F]" }
                     },
+                new Dictionary<char, string>
+                {
+                        {'F', "F[+F]F[-F][F]" }
+                    },
+                new Dictionary<char, string>
+                {
+                        {'F', "F[+F]F[-F][F][+F]F[-F][F]" }
+                    },
             ];
 
         Dictionary<char, string> selectedPreset;
