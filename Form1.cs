@@ -31,7 +31,7 @@ namespace LSystemsDemo
 
         Dictionary<char, string> selectedPreset;
         private float branchLength = 20;
-        private float branchAngle = 45;
+        private float branchAngle = 30;
         private float branchWidth = 1;
         private int presetSelect = 0; 
         private Pen myPen = new Pen(Color.Black, 1);
@@ -110,14 +110,24 @@ namespace LSystemsDemo
             float initialAngle = 90; // Adjust as needed
             float angle = initialAngle * (float)Math.PI / 180; // Convert to radians
 
-            foreach (char c in lSystem)
+            for (int i = 0; i < lSystem.Length; i++)
             {
+                char c = lSystem[i];
                 switch (c)
                 {
                     case 'F': // Move forward
-                        PointF newPosition = new PointF(currentPosition.X + stepLength * (float)Math.Cos(angle), currentPosition.Y + stepLength * (float)Math.Sin(angle));
+                        PointF newPosition = new PointF(
+                            currentPosition.X + stepLength * (float)Math.Cos(angle),
+                            currentPosition.Y + stepLength * (float)Math.Sin(angle)
+                        );
                         graphics.DrawLine(myPen, currentPosition, newPosition);
                         currentPosition = newPosition;
+
+                        // Check if this is a terminal segment
+                        if (IsTerminalSegment(lSystem, i))
+                        {
+                            DrawLeaf(graphics, currentPosition);
+                        }
                         break;
                     case '+': // branch right
                         angle += angleIncrement * (float)Math.PI / 180; // Convert to radians
@@ -134,6 +144,51 @@ namespace LSystemsDemo
                 }
             }
 
+        }
+
+        private bool IsTerminalSegment(string lSystem, int index)
+        {
+            // Check if the next significant character after 'F' at the same level is ']'
+            int depth = 0;
+            for (int i = index + 1; i < lSystem.Length; i++)
+            {
+                switch (lSystem[i])
+                {
+                    case 'F':
+                        if (depth == 0)
+                        {
+                            // If we encounter another 'F' at the same level, this is not terminal.
+                            return false;
+                        }
+                        break;
+                    case '[':
+                        depth++;
+                        if (depth > 0)
+                        {
+                            // If we find an opening bracket before another 'F' at the same level, this is not terminal.
+                            return false;
+                        }
+                        break;
+                    case ']':
+                        depth--;
+                        if (depth < 0)
+                        {
+                            // If we find a closing bracket before another 'F' at the same level, this is terminal.
+                            return true;
+                        }
+                        break;
+                }
+            }
+            // If we reach the end of the string without finding another 'F' at the same level, it's terminal.
+            return depth == 0;
+        }
+
+
+
+        private void DrawLeaf(Graphics g, PointF position)
+        {
+            // Draw a leaf using an ellipse or a custom shape
+            g.FillEllipse(Brushes.Green, position.X - 5, position.Y - 5, 10, 10);
         }
 
         private bool isDragging = false;
