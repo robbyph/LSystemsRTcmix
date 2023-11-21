@@ -118,14 +118,7 @@ namespace LSystemsDemo
                         PointF newPosition = new PointF(currentPosition.X + stepLength * (float)Math.Cos(angle), currentPosition.Y + stepLength * (float)Math.Sin(angle));
                         graphics.DrawLine(myPen, currentPosition, newPosition);
                         currentPosition = newPosition;
-                        break;/*
-                    case 'G':
-                        //Move forward and then draw a leaf at the end
-                        PointF newPositionG = new PointF(currentPosition.X + stepLength * (float)Math.Cos(angle), currentPosition.Y + stepLength * (float)Math.Sin(angle));
-                        graphics.DrawLine(Pens.Black, currentPosition, newPositionG);
-                        currentPosition = newPositionG;
-                        graphics.FillEllipse(Brushes.Green, currentPosition.X, currentPosition.Y, 5, 5);
-                        break;*/
+                        break;
                     case '+': // branch right
                         angle += angleIncrement * (float)Math.PI / 180; // Convert to radians
                         break;
