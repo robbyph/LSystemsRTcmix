@@ -224,6 +224,9 @@ namespace LSystemsDemo
                 //add a musical event to the musical events list
                 musicalEvents.Add("WAVETABLE(" + timeTracker + "," + duration + ", 2500," + note.Frequency + ", .5, ampenv)");
                 timeTracker += duration;
+
+                //I'll probably have to add the musical events later, after generating the rests for the motif, and randomly incorporate the rests into the motif
+
             }
 
         }
