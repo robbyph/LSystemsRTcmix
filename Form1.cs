@@ -13,11 +13,12 @@ namespace LSystemsDemo
         private Graphics graphics;
         private PointF currentGraphicalPosition;
         private Stack<(PointF, float)> stack = new Stack<(PointF, float)>(); // Stack to save state
+        private float timeTracker = 0;
+        private float[] durations = [0.25f, 0.5f, 1];
 
 
-
-    //create a class called preset, which contains a string called axiom and a Dictionary<char, string> called rules
-    class Preset
+        //create a class called preset, which contains a string called axiom and a Dictionary<char, string> called rules
+        class Preset
         {
             public string axiom;
             public Dictionary<char, string> rules;
@@ -46,15 +47,15 @@ namespace LSystemsDemo
             new Preset("F", new Dictionary<char, string> { { 'F', "F[+F]F[-F][F]" } }),
             new Preset("F", new Dictionary<char, string> { { 'F', "F[+F]F[-F][F]" } }),
             new Preset("F", new Dictionary<char, string> { { 'F', "F[+F]F[-F][F]" } })
-        };  
+        };
 
-        Preset selectedPreset = 
+        Preset selectedPreset =
             new Preset("F", new Dictionary<char, string> { { 'F', "F[+F]F[-F][F]" } });
 
         private float branchLength = 20;
         private float branchAngle = 30;
         private float branchWidth = 1;
-        private int presetSelect = 0; 
+        private int presetSelect = 0;
         private Pen myPen = new Pen(Color.Black, 1);
 
         string lastGeneratedLSystem = "";
@@ -79,12 +80,7 @@ namespace LSystemsDemo
             //clear the musical events list
             musicalEvents.Clear();
 
-            List<string> strings = new List<string>();
-
-            foreach (var formula in Registry.ScaleFormulas)
-            {
-                strings.Add(($"Scale name '{formula.Name}', Intervals: '{formula.Intervals}'"));
-            }
+            timeTracker = 0;
 
             try
             {
@@ -159,9 +155,11 @@ namespace LSystemsDemo
                         // Check if this is a terminal segment
                         if (IsTerminalSegment(lSystem, i))
                         {
+                            //Draw leaves
                             DrawLeaf(graphics, currentPosition);
+
                             //add a musical event to the musical events list
-                            musicalEvents.Add("WAVETABLE(0.00, 0.50, 2500, 8.00, .5, ampenv)");
+                            GenerateMotif();
                         }
                         break;
                     case '+': // branch right
@@ -177,6 +175,55 @@ namespace LSystemsDemo
                         (currentPosition, angle) = stack.Pop();
                         break;
                 }
+            }
+
+        }
+
+        private void GenerateMotif()
+        {
+            //generate a motif
+            //generate a random number of notes between 1 and 10
+            Random rnd = new Random();
+            int numberOfNotes = rnd.Next(4, 10);
+
+            //generate a random number of rests between 0 and 5
+            int numberOfRests = rnd.Next(1, 5);
+
+            //Get our pitch set
+            ScaleFormula scaleFormula = Registry.ScaleFormulas["Major"];
+            Scale scale = new Scale(PitchClass.C, scaleFormula);
+
+            List<PitchClass> pc = new List<PitchClass>();
+
+            for (int i = 0; i < numberOfNotes; i++)
+            {
+                //generate a random note
+                PitchClassCollection pitchClasses = scale.PitchClasses;
+
+                PitchClass notePC;
+                Pitch note;
+
+                if (i == 0)
+                {
+                    notePC = pitchClasses[0];
+                }
+                else if (i == numberOfNotes - 1)
+                {
+                    notePC = pitchClasses[0];
+                }
+                else
+                {
+                    notePC = pitchClasses[rnd.Next(0, pitchClasses.Count)];
+                }
+
+                note = Pitch.Create(notePC, 4);
+
+                //generate a random duration
+                float duration = durations[rnd.Next(0, durations.Length)];
+
+                //add a musical event to the musical events list
+                musicalEvents.Add("WAVETABLE(" + timeTracker + "," + duration + ", 2500," + note.Frequency + ", .5, ampenv)");
+                timeTracker += duration;
             }
 
         }
