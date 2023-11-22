@@ -79,10 +79,11 @@ namespace LSystemsDemo
             //clear the musical events list
             musicalEvents.Clear();
 
+            List<string> strings = new List<string>();
 
             foreach (var formula in Registry.ScaleFormulas)
             {
-                Console.WriteLine($"Scale name '{formula.Name}', Intervals: '{formula.Intervals}'");
+                strings.Add(($"Scale name '{formula.Name}', Intervals: '{formula.Intervals}'"));
             }
 
             try
