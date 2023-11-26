@@ -44,6 +44,7 @@
             pictureBox = new PictureBox();
             branchWidthTrackbar = new TrackBar();
             label7 = new Label();
+            button2 = new Button();
             ((System.ComponentModel.ISupportInitialize)presetsTrackbar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)seedTrackbar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)variabilityTrackbar).BeginInit();
@@ -58,9 +59,9 @@
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
-            label1.Location = new Point(997, 16);
+            label1.Location = new Point(872, 12);
             label1.Name = "label1";
-            label1.Size = new Size(89, 32);
+            label1.Size = new Size(72, 25);
             label1.TabIndex = 1;
             label1.Text = "Presets";
             // 
@@ -68,9 +69,9 @@
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
-            label2.Location = new Point(997, 117);
+            label2.Location = new Point(872, 88);
             label2.Name = "label2";
-            label2.Size = new Size(113, 32);
+            label2.Size = new Size(91, 25);
             label2.TabIndex = 2;
             label2.Text = "Iterations";
             // 
@@ -78,9 +79,9 @@
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
-            label3.Location = new Point(997, 421);
+            label3.Location = new Point(872, 316);
             label3.Name = "label3";
-            label3.Size = new Size(168, 32);
+            label3.Size = new Size(134, 25);
             label3.TabIndex = 3;
             label3.Text = "Branch Length";
             // 
@@ -88,9 +89,9 @@
             // 
             label4.AutoSize = true;
             label4.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
-            label4.Location = new Point(997, 219);
+            label4.Location = new Point(872, 164);
             label4.Name = "label4";
-            label4.Size = new Size(67, 32);
+            label4.Size = new Size(53, 25);
             label4.TabIndex = 4;
             label4.Text = "Seed";
             // 
@@ -98,9 +99,9 @@
             // 
             label5.AutoSize = true;
             label5.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
-            label5.Location = new Point(997, 320);
+            label5.Location = new Point(872, 240);
             label5.Name = "label5";
-            label5.Size = new Size(117, 32);
+            label5.Size = new Size(96, 25);
             label5.TabIndex = 5;
             label5.Text = "Variability";
             // 
@@ -108,57 +109,52 @@
             // 
             label6.AutoSize = true;
             label6.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
-            label6.Location = new Point(997, 523);
+            label6.Location = new Point(872, 392);
             label6.Name = "label6";
-            label6.Size = new Size(156, 32);
+            label6.Size = new Size(125, 25);
             label6.TabIndex = 6;
             label6.Text = "Branch Angle";
             // 
             // presetsTrackbar
             // 
-            presetsTrackbar.Location = new Point(997, 53);
-            presetsTrackbar.Margin = new Padding(3, 4, 3, 4);
+            presetsTrackbar.Location = new Point(872, 40);
             presetsTrackbar.Name = "presetsTrackbar";
-            presetsTrackbar.Size = new Size(119, 56);
+            presetsTrackbar.Size = new Size(104, 45);
             presetsTrackbar.TabIndex = 7;
             presetsTrackbar.Scroll += presetsTrackbar_Scroll;
             // 
             // seedTrackbar
             // 
-            seedTrackbar.Location = new Point(997, 256);
-            seedTrackbar.Margin = new Padding(3, 4, 3, 4);
+            seedTrackbar.Location = new Point(872, 192);
             seedTrackbar.Name = "seedTrackbar";
-            seedTrackbar.Size = new Size(119, 56);
+            seedTrackbar.Size = new Size(104, 45);
             seedTrackbar.TabIndex = 9;
             // 
             // variabilityTrackbar
             // 
-            variabilityTrackbar.Location = new Point(997, 357);
-            variabilityTrackbar.Margin = new Padding(3, 4, 3, 4);
+            variabilityTrackbar.Location = new Point(872, 268);
             variabilityTrackbar.Name = "variabilityTrackbar";
-            variabilityTrackbar.Size = new Size(119, 56);
+            variabilityTrackbar.Size = new Size(104, 45);
             variabilityTrackbar.TabIndex = 10;
             // 
             // branchLengthTrackbar
             // 
-            branchLengthTrackbar.Location = new Point(997, 459);
-            branchLengthTrackbar.Margin = new Padding(3, 4, 3, 4);
+            branchLengthTrackbar.Location = new Point(872, 344);
             branchLengthTrackbar.Maximum = 100;
             branchLengthTrackbar.Minimum = 1;
             branchLengthTrackbar.Name = "branchLengthTrackbar";
-            branchLengthTrackbar.Size = new Size(119, 56);
+            branchLengthTrackbar.Size = new Size(104, 45);
             branchLengthTrackbar.TabIndex = 11;
             branchLengthTrackbar.Value = 20;
             branchLengthTrackbar.Scroll += branchLengthTrackbar_Scroll;
             // 
             // branchAngleTrackbar
             // 
-            branchAngleTrackbar.Location = new Point(997, 560);
-            branchAngleTrackbar.Margin = new Padding(3, 4, 3, 4);
+            branchAngleTrackbar.Location = new Point(872, 420);
             branchAngleTrackbar.Maximum = 360;
             branchAngleTrackbar.Minimum = -360;
             branchAngleTrackbar.Name = "branchAngleTrackbar";
-            branchAngleTrackbar.Size = new Size(119, 56);
+            branchAngleTrackbar.Size = new Size(104, 45);
             branchAngleTrackbar.TabIndex = 12;
             branchAngleTrackbar.Value = 45;
             branchAngleTrackbar.Scroll += branchAngleTrackbar_Scroll;
@@ -166,10 +162,9 @@
             // button1
             // 
             button1.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
-            button1.Location = new Point(1002, 764);
-            button1.Margin = new Padding(3, 4, 3, 4);
+            button1.Location = new Point(877, 573);
             button1.Name = "button1";
-            button1.Size = new Size(122, 49);
+            button1.Size = new Size(107, 37);
             button1.TabIndex = 13;
             button1.Text = "Generate";
             button1.UseVisualStyleBackColor = true;
@@ -177,18 +172,16 @@
             // 
             // IterationsNumericUpDown
             // 
-            IterationsNumericUpDown.Location = new Point(1002, 155);
-            IterationsNumericUpDown.Margin = new Padding(3, 4, 3, 4);
+            IterationsNumericUpDown.Location = new Point(877, 116);
             IterationsNumericUpDown.Name = "IterationsNumericUpDown";
-            IterationsNumericUpDown.Size = new Size(137, 27);
+            IterationsNumericUpDown.Size = new Size(120, 23);
             IterationsNumericUpDown.TabIndex = 14;
             // 
             // pictureBox
             // 
             pictureBox.Location = new Point(-3, 1);
-            pictureBox.Margin = new Padding(3, 4, 3, 4);
             pictureBox.Name = "pictureBox";
-            pictureBox.Size = new Size(973, 891);
+            pictureBox.Size = new Size(851, 668);
             pictureBox.TabIndex = 0;
             pictureBox.TabStop = false;
             pictureBox.MouseDown += pictureBox_MouseDown;
@@ -198,10 +191,9 @@
             // 
             // branchWidthTrackbar
             // 
-            branchWidthTrackbar.Location = new Point(1002, 656);
-            branchWidthTrackbar.Margin = new Padding(3, 4, 3, 4);
+            branchWidthTrackbar.Location = new Point(877, 492);
             branchWidthTrackbar.Name = "branchWidthTrackbar";
-            branchWidthTrackbar.Size = new Size(119, 56);
+            branchWidthTrackbar.Size = new Size(104, 45);
             branchWidthTrackbar.TabIndex = 16;
             branchWidthTrackbar.Scroll += branchWidthTrackbar_Scroll;
             // 
@@ -209,17 +201,29 @@
             // 
             label7.AutoSize = true;
             label7.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
-            label7.Location = new Point(1002, 619);
+            label7.Location = new Point(877, 464);
             label7.Name = "label7";
-            label7.Size = new Size(158, 32);
+            label7.Size = new Size(127, 25);
             label7.TabIndex = 15;
             label7.Text = "Branch Width";
             // 
+            // button2
+            // 
+            button2.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point);
+            button2.Location = new Point(1124, 638);
+            button2.Name = "button2";
+            button2.Size = new Size(83, 23);
+            button2.TabIndex = 17;
+            button2.Text = "debug menu";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
+            // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1184, 897);
+            ClientSize = new Size(1219, 673);
+            Controls.Add(button2);
             Controls.Add(branchWidthTrackbar);
             Controls.Add(label7);
             Controls.Add(pictureBox);
@@ -236,7 +240,6 @@
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(label1);
-            Margin = new Padding(3, 4, 3, 4);
             Name = "Form1";
             Text = "MainForm";
             ((System.ComponentModel.ISupportInitialize)presetsTrackbar).EndInit();
@@ -268,5 +271,6 @@
         private PictureBox pictureBox;
         private TrackBar branchWidthTrackbar;
         private Label label7;
+        private Button button2;
     }
 }
