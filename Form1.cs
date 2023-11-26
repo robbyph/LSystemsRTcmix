@@ -232,11 +232,11 @@ namespace LSystemsDemo
 
 
             //generate a motif
-            //generate a random number of notes between 1 and 10
+            //generate a random number of notes between 3 and 7
             Random rnd = new Random();
             int numberOfNotes = rnd.Next(3, 7);
 
-            //generate a random number of rests between 0 and 5
+            //generate a random number of rests between 1 and 5
             int numberOfRests = rnd.Next(1, 5);
 
             //Get our pitch set
@@ -245,6 +245,10 @@ namespace LSystemsDemo
 
             List<PitchClass> pc = new List<PitchClass>();
 
+            //initialize tempMusicalEvents list
+            List<string> tempMusicalEvents = new List<string>();
+            
+            //generate our notes
             for (int i = 0; i < numberOfNotes; i++)
             {
                 //generate a random note
@@ -272,12 +276,32 @@ namespace LSystemsDemo
                 float duration = durations[rnd.Next(0, durations.Length)];
 
                 //add a musical event to the musical events list
-                musicalEvents.Add("WAVETABLE(" + timeTracker + "," + duration + ", 2500," + note.Frequency + ", .5, ampenv)");
+                tempMusicalEvents.Add("WAVETABLE(" + timeTracker + "," + duration + ", 2500," + note.Frequency + ", .5, ampenv)");
                 timeTracker += duration;
 
                 //I'll probably have to add the musical events later, after generating the rests for the motif, and randomly incorporate the rests into the motif
 
             }
+            //generate our rests
+            for (int i = 0; i < numberOfRests; i++)
+            {
+                //generate a random duration
+                float duration = durations[rnd.Next(0, durations.Length)];
+
+                //add a musical event to the musical events list
+                tempMusicalEvents.Add("WAVETABLE(" + timeTracker + "," + duration + ", 0, 0, .5, ampenv)");
+                timeTracker += duration;
+            }
+            //add our notes and rests in random order to the musical events list from the tempMusicalEvents list
+            while (tempMusicalEvents.Count > 0)
+            {
+                int index = rnd.Next(0, tempMusicalEvents.Count);
+                musicalEvents.Add(tempMusicalEvents[index]);
+                tempMusicalEvents.RemoveAt(index);
+            }
+
+
+            
 
         }
 
