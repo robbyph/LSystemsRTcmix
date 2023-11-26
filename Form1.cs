@@ -15,6 +15,8 @@ namespace LSystemsDemo
         private Stack<(PointF, float)> stack = new Stack<(PointF, float)>(); // Stack to save state
         private float timeTracker = 0;
         private float[] durations = [0.25f, 0.5f, 1];
+        private int bracketDepth = 0;
+        private int previousBracketDepth = 0;
 
 
         //create a class called preset, which contains a string called axiom and a Dictionary<char, string> called rules
@@ -170,9 +172,11 @@ namespace LSystemsDemo
                         break;
                     case '[': // Push current state to the stack
                         stack.Push((currentPosition, angle));
+                        bracketDepth++;
                         break;
                     case ']': // Pop state from the stack
                         (currentPosition, angle) = stack.Pop();
+                        bracketDepth--; 
                         break;
                 }
             }
@@ -181,10 +185,20 @@ namespace LSystemsDemo
 
         private void GenerateMotif()
         {
+            //if this motif is at the same bracket depth as the previous motif, then we need to play the same motif again, but transformed in some way
+            //if this motif is at a different bracket depth than the previous motif, then we need to generate a new motif
+            
+            //if bracket depth is negative, throw an error
+            if (bracketDepth < 0)
+            {
+                MessageBox.Show("Bracket depth is negative");
+                return;
+            }
+
             //generate a motif
             //generate a random number of notes between 1 and 10
             Random rnd = new Random();
-            int numberOfNotes = rnd.Next(4, 10);
+            int numberOfNotes = rnd.Next(3, 7);
 
             //generate a random number of rests between 0 and 5
             int numberOfRests = rnd.Next(1, 5);
@@ -224,6 +238,9 @@ namespace LSystemsDemo
                 //add a musical event to the musical events list
                 musicalEvents.Add("WAVETABLE(" + timeTracker + "," + duration + ", 2500," + note.Frequency + ", .5, ampenv)");
                 timeTracker += duration;
+
+                //I'll probably have to add the musical events later, after generating the rests for the motif, and randomly incorporate the rests into the motif
+
             }
 
         }
