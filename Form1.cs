@@ -17,6 +17,9 @@ namespace LSystemsDemo
         private float[] durations = [0.25f, 0.5f, 1];
         private int bracketDepth = 0;
         private int previousBracketDepth = 0;
+        private List<int> bracketDepths = new List<int>();
+        private int trueDepth = 0;
+        private List<int> trueDepths = new List<int>();
 
 
         //create a class called preset, which contains a string called axiom and a Dictionary<char, string> called rules
@@ -82,6 +85,12 @@ namespace LSystemsDemo
             //clear the musical events list
             musicalEvents.Clear();
 
+            //clear both depths lists
+            bracketDepths.Clear();
+            trueDepths.Clear();
+            bracketDepth = 0;
+            trueDepth = 0;
+
             timeTracker = 0;
 
             try
@@ -138,6 +147,8 @@ namespace LSystemsDemo
 
             var currentPosition = new PointF(pictureBox.Width / 2, 0);
 
+            var firstForwardMoveCompleted = false;
+
             float initialAngle = 90; // Adjust as needed
             float angle = initialAngle * (float)Math.PI / 180; // Convert to radians
 
@@ -152,7 +163,24 @@ namespace LSystemsDemo
                             currentPosition.Y + stepLength * (float)Math.Sin(angle)
                         );
                         graphics.DrawLine(myPen, currentPosition, newPosition);
+
+                        //Draw the letter F between the two points, accounting for offsets
+                        //graphics.DrawString("F", new Font("Arial", 8), Brushes.Black, (currentPosition.X + newPosition.X) / 2, (currentPosition.Y + newPosition.Y) / 2);
+
                         currentPosition = newPosition;
+                        
+                        //adjust the depth 
+                        if (bracketDepth == 0)
+                        { 
+                            if (firstForwardMoveCompleted == false)
+                            {
+                                firstForwardMoveCompleted = true;
+                            }
+                            else
+                            {
+                                trueDepth++;
+                            }
+                        }
 
                         // Check if this is a terminal segment
                         if (IsTerminalSegment(lSystem, i))
@@ -173,10 +201,12 @@ namespace LSystemsDemo
                     case '[': // Push current state to the stack
                         stack.Push((currentPosition, angle));
                         bracketDepth++;
+                        trueDepth++;
                         break;
                     case ']': // Pop state from the stack
                         (currentPosition, angle) = stack.Pop();
-                        bracketDepth--; 
+                        bracketDepth--;
+                        trueDepth--;
                         break;
                 }
             }
@@ -187,13 +217,19 @@ namespace LSystemsDemo
         {
             //if this motif is at the same bracket depth as the previous motif, then we need to play the same motif again, but transformed in some way
             //if this motif is at a different bracket depth than the previous motif, then we need to generate a new motif
-            
+
             //if bracket depth is negative, throw an error
             if (bracketDepth < 0)
             {
                 MessageBox.Show("Bracket depth is negative");
                 return;
             }
+            else
+            {
+                bracketDepths.Add(bracketDepth);
+                trueDepths.Add(trueDepth);
+            }
+
 
             //generate a motif
             //generate a random number of notes between 1 and 10
@@ -288,6 +324,9 @@ namespace LSystemsDemo
         {
             // Draw a leaf using an ellipse or a custom shape
             g.FillEllipse(Brushes.Green, position.X - 5, position.Y - 5, 10, 10);
+
+            //label the leaf with its order in the tree
+            g.DrawString(trueDepth.ToString(), new Font("Arial", 8), Brushes.Black, position.X - 5, position.Y - 5);
         }
 
         private bool isDragging = false;
@@ -406,6 +445,14 @@ namespace LSystemsDemo
             lastGeneratedLSystem = lSystem;
             graphics.Clear(Color.White);
             RenderLSystem(lastGeneratedLSystem);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            //opens a new form to view debug info
+            DebugForm debugForm = new DebugForm(bracketDepths, trueDepths);
+            debugForm.Show();
+
         }
     }
 }
