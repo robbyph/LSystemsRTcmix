@@ -4,6 +4,8 @@ using System.Windows.Forms;
 using System.IO;
 using Bach.Model;
 using System.Runtime.ExceptionServices;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Runtime.InteropServices;
 
 
 namespace LSystemsDemo
@@ -456,15 +458,50 @@ namespace LSystemsDemo
                     MusicalEvent tempEvent = tempMotif[i];
 
                     //invert the frequency around the root and prevent rests from being inverted
-                    if (tempEvent.pitch == 0)
+                    if (tempEvent.pitch == 0 || tempEvent.amplitude == 0)
                     {
 
                     }
                     else
                     {
-                        //invert the pitch around the root
-                        float freq = (float)Pitch.Create(rootNote, 4).Frequency;
-                        tempEvent.pitch = freq * 2 - tempMotif[i].pitch;
+                        //invert the interval around the root
+                        float rootFrequency = (float)Pitch.Create(rootNote, 4).Frequency;
+                        //tempEvent.pitch = freq * 2 - tempMotif[i].pitch;
+
+                        // Calculate the ratio of the note's frequency to the root's frequency
+                        float ratio = tempEvent.pitch / rootFrequency;
+
+                        // Invert the ratio to find the interval below the root
+                        float invertedRatio = 1 / ratio;
+
+                        // Multiply the root's frequency by the inverted ratio to get the frequency of the inverted note
+                        float invertedNoteFrequency = rootFrequency * invertedRatio;
+
+                        tempEvent.pitch = invertedNoteFrequency;
+
+                        /*float midiNoteNumber = (float)(69 + 12 * (Math.Log(tempEvent.pitch / 440, 2)));
+                        Pitch rootPitch = Pitch.Create(rootNote, 4);
+                        float rootMidiNoteNumber = (float)(69 + 12 * (Math.Log((float)rootPitch.Frequency / 440, 2)));
+                        float interval = Math.Abs(midiNoteNumber - rootMidiNoteNumber);
+
+                        float newMidiNoteNumber = 0;
+
+
+                        if (midiNoteNumber > rootMidiNoteNumber) //if the note is above the root
+                        {
+                            newMidiNoteNumber = rootMidiNoteNumber - (interval * 2);
+
+                        }
+                        else if (midiNoteNumber < rootMidiNoteNumber) //if the note is below the root
+                        {
+                            newMidiNoteNumber = rootMidiNoteNumber + (interval * 2);
+                        }else 
+                        {
+                            //do nothing
+                        }*/
+
+
+
                     }
 
                     //adjust the start time of the event
