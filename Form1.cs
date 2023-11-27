@@ -414,7 +414,7 @@ namespace LSystemsDemo
 
             //generate a random number between 0 and 2
             Random rnd = new Random();
-            int transform = rnd.Next(0, 3);
+            int transform = rnd.Next(0, 4);
 
             //if transform is 0, then we need to transpose the motif
             if (transform == 0)
@@ -543,6 +543,63 @@ namespace LSystemsDemo
                     tempMotif[i] = tempEvent;
                 }
 
+            }else if (transform == 3) //if transform is 3, we will simply change one of the notes in the motif
+            {
+                debugWriter.WriteLine("Changing a note in the motif\n");
+
+                //generate a random index between 0 and the number of notes in the motif
+                int index = rnd.Next(0, tempMotif.Count);
+
+                //change the note at the index
+                MusicalEvent tempEvent = tempMotif[index];
+
+                //generate a random note
+                ScaleFormula scaleFormula = Registry.ScaleFormulas["Major"];
+                Scale scale = new Scale(rootNote, scaleFormula);
+                PitchClassCollection pitchClasses = scale.PitchClasses;
+
+                PitchClass notePC;
+                Pitch note;
+
+                if (index == 0)
+                {
+                    notePC = pitchClasses[0];
+                }
+                else if (index == tempMotif.Count - 1)
+                {
+                    notePC = pitchClasses[0];
+                }
+                else
+                {
+                    notePC = pitchClasses[rnd.Next(0, pitchClasses.Count)];
+                }
+
+                note = Pitch.Create(notePC, 4);
+
+                //change the pitch of the note
+                tempEvent.pitch = (float)note.Frequency;
+
+                debugWriter.WriteLine(
+                    "Changed Note! Duration: " + tempEvent.duration + " Time tracker at: " + timeTracker + "\n");
+
+                tempMotif[index] = tempEvent;
+
+                //adjust the start time of all the motif events
+                for (int i = 0; i < tempMotif.Count; i++)
+                {
+                    //create deep copy of the event
+                    MusicalEvent tempEvent2 = tempMotif[i];
+
+                    //adjust the start time of the event
+                    tempEvent2.startTime = timeTracker;
+
+                    //adjust the time tracker
+                    timeTracker += tempEvent2.duration;
+
+                    debugWriter.WriteLine("Changed Note! Duration: " + tempEvent2.duration + " Time tracker at: " + timeTracker + "\n");
+
+                    tempMotif[i] = tempEvent2;
+                }
             }
 
             transformationCount++;
