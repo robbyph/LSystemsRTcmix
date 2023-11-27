@@ -32,6 +32,8 @@
             lblBracketDepths = new Label();
             lblTrueBracketDepth = new Label();
             label3 = new Label();
+            lblTransformationCount = new Label();
+            label4 = new Label();
             SuspendLayout();
             // 
             // label1
@@ -70,11 +72,31 @@
             label3.TabIndex = 2;
             label3.Text = "True Depths:";
             // 
+            // lblTransformationCount
+            // 
+            lblTransformationCount.AutoSize = true;
+            lblTransformationCount.Location = new Point(403, 24);
+            lblTransformationCount.Name = "lblTransformationCount";
+            lblTransformationCount.Size = new Size(0, 15);
+            lblTransformationCount.TabIndex = 5;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            label4.Location = new Point(403, 9);
+            label4.Name = "label4";
+            label4.Size = new Size(131, 15);
+            label4.TabIndex = 4;
+            label4.Text = "Transformation Count:";
+            // 
             // DebugForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(695, 334);
+            Controls.Add(lblTransformationCount);
+            Controls.Add(label4);
             Controls.Add(lblTrueBracketDepth);
             Controls.Add(label3);
             Controls.Add(lblBracketDepths);
@@ -92,5 +114,7 @@
         private Label lblBracketDepths;
         private Label lblTrueBracketDepth;
         private Label label3;
+        private Label lblTransformationCount;
+        private Label label4;
     }
 }

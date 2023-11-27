@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using Bach.Model;
+using System.Runtime.ExceptionServices;
 
 
 namespace LSystemsDemo
@@ -20,6 +21,15 @@ namespace LSystemsDemo
         private List<int> bracketDepths = new List<int>();
         private int trueDepth = 0;
         private List<int> trueDepths = new List<int>();
+        private List<MusicalEvent> musicalEvents = new List<MusicalEvent>();
+        private int transformationCount = 0;
+        private PitchClass rootNote = PitchClass.C;
+
+        private StringBuilder sbDebug;
+        private StreamWriter debugWriter;
+
+        //motifs dictionary
+        private List<MusicalEvent>[] motifs = new List<MusicalEvent>[100];
 
 
         //create a class called preset, which contains a string called axiom and a Dictionary<char, string> called rules
@@ -65,7 +75,6 @@ namespace LSystemsDemo
 
         string lastGeneratedLSystem = "";
 
-        List<string> musicalEvents = new List<string>();
 
         public Form1()
         {
@@ -78,6 +87,11 @@ namespace LSystemsDemo
 
         private void GenerateButton_Click(object sender, EventArgs e)
         {
+
+            sbDebug = new StringBuilder("../../../Output/DebugOutput - " + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt");
+            debugWriter = new StreamWriter(sbDebug.ToString());
+
+
             //Get the value of the numeric up down for the amount of iterations
             int iterations = (int)IterationsNumericUpDown.Value;
             int preset = presetSelect;
@@ -113,6 +127,8 @@ namespace LSystemsDemo
             RenderLSystem(lSystem);
 
             generateRTCMix();
+
+            debugWriter.Close();
         }
 
         private string GenerateLSystem(string axiom, int iterations)
@@ -168,10 +184,10 @@ namespace LSystemsDemo
                         //graphics.DrawString("F", new Font("Arial", 8), Brushes.Black, (currentPosition.X + newPosition.X) / 2, (currentPosition.Y + newPosition.Y) / 2);
 
                         currentPosition = newPosition;
-                        
+
                         //adjust the depth 
                         if (bracketDepth == 0)
-                        { 
+                        {
                             if (firstForwardMoveCompleted == false)
                             {
                                 firstForwardMoveCompleted = true;
@@ -233,21 +249,29 @@ namespace LSystemsDemo
 
             //generate a motif
             //generate a random number of notes between 3 and 7
-            Random rnd = new Random();
-            int numberOfNotes = rnd.Next(3, 7);
+            Random rnd = new Random(DateTime.Now.Millisecond);
+
+            int numberOfNotes = rnd.Next(4, 7);
 
             //generate a random number of rests between 1 and 5
-            int numberOfRests = rnd.Next(1, 5);
+            int numberOfRests = rnd.Next(1, 3);
 
             //Get our pitch set
             ScaleFormula scaleFormula = Registry.ScaleFormulas["Major"];
-            Scale scale = new Scale(PitchClass.C, scaleFormula);
+            Scale scale = new Scale(rootNote, scaleFormula);
 
             List<PitchClass> pc = new List<PitchClass>();
 
             //initialize tempMusicalEvents list
-            List<string> tempMusicalEvents = new List<string>();
-            
+            List<MusicalEvent> tempMusicalEvents = new List<MusicalEvent>();
+
+            //notes list
+            List<Pitch> notes = new List<Pitch>();
+
+            //rests list
+            List<float> rests = new List<float>();
+
+
             //generate our notes
             for (int i = 0; i < numberOfNotes; i++)
             {
@@ -272,37 +296,220 @@ namespace LSystemsDemo
 
                 note = Pitch.Create(notePC, 4);
 
-                //generate a random duration
-                float duration = durations[rnd.Next(0, durations.Length)];
-
-                //add a musical event to the musical events list
-                tempMusicalEvents.Add("WAVETABLE(" + timeTracker + "," + duration + ", 2500," + note.Frequency + ", .5, ampenv)");
-                timeTracker += duration;
-
-                //I'll probably have to add the musical events later, after generating the rests for the motif, and randomly incorporate the rests into the motif
-
+                //add the note to the notes list
+                notes.Add(note);
             }
             //generate our rests
             for (int i = 0; i < numberOfRests; i++)
             {
-                //generate a random duration
-                float duration = durations[rnd.Next(0, durations.Length)];
+                //generate a random rest
+                float rest = durations[rnd.Next(0, durations.Length - 1)];
 
-                //add a musical event to the musical events list
-                tempMusicalEvents.Add("WAVETABLE(" + timeTracker + "," + duration + ", 0, 0, .5, ampenv)");
-                timeTracker += duration;
+                //add the rest to the rests list
+                rests.Add(rest);
             }
-            //add our notes and rests in random order to the musical events list from the tempMusicalEvents list
-            while (tempMusicalEvents.Count > 0)
+
+            //check if we already have a motif at this depth. If we do, then we need to transform it, otherwise we need to add this motif to the array, at the index of the true depth
+            if (motifs[trueDepth] != null)
             {
-                int index = rnd.Next(0, tempMusicalEvents.Count);
-                musicalEvents.Add(tempMusicalEvents[index]);
-                tempMusicalEvents.RemoveAt(index);
+                debugWriter.WriteLine("Transforming an existing motif\n");
+
+                //create a deep copy of the motif
+                List<MusicalEvent> tempMotif = motifs[trueDepth].ConvertAll(ev => new MusicalEvent(ev.startTime, ev.duration, ev.pitch, ev.pan));
+
+                //transform the motif using a temp variable
+                tempMotif = transformMotif(tempMotif);
+                tempMusicalEvents = tempMotif;
+
+                //add our notes and rests to the musical events list from the tempMusicalEvents list, in normal order
+                foreach (MusicalEvent musicalEvent1 in tempMusicalEvents)
+                {
+                    musicalEvents.Add(musicalEvent1);
+                }
+            }
+            else
+            {
+                debugWriter.WriteLine("Generating a new motif\n");
+
+                //combine the notes and rests lists into a single list in random order
+                List<float> tempRests = new List<float>(rests);
+                List<Pitch> tempNotes = new List<Pitch>(notes);
+
+                while (tempRests.Count > 0 || tempNotes.Count > 0)
+                {
+                    //generate a random number between 0 and 1
+                    float random = (float)rnd.NextDouble();
+
+                    //generate a random duration
+                    float duration = durations[rnd.Next(0, durations.Length)];
+
+                    //if random is less than 0.5, then we need to add a note, or add a note if its the first event
+                    if (random < 0.5 && tempNotes.Count > 0)
+                    {
+                        debugWriter.WriteLine("Adding a note\n");
+
+                        //generate a random index between 0 and the number of notes in the tempNotes list
+                        int index = rnd.Next(0, tempNotes.Count);
+
+                        //add the note to the tempMusicalEvents list
+                        tempMusicalEvents.Add(new MusicalEvent(timeTracker, duration, (float)tempNotes[index].Frequency, 0.5f));
+
+                        //remove the note from the tempNotes list
+                        tempNotes.RemoveAt(index);
+
+                        //increment the time tracker by the duration of the last event
+                        timeTracker += tempMusicalEvents[tempMusicalEvents.Count - 1].duration;
+
+                        debugWriter.WriteLine("Added Note of duration " + tempMusicalEvents[tempMusicalEvents.Count - 1].duration + "! Time tracker at: " + timeTracker + "\n");
+                    }
+                    else if (random >= 0.5 && tempRests.Count > 0) //if random is greater than or equal to 0.5, then we need to add a rest
+                    {
+                        debugWriter.WriteLine("Adding a rest\n");
+
+                        //generate a random index between 0 and the number of rests in the tempRests list
+                        int index = rnd.Next(0, tempRests.Count);
+
+                        //add the rest to the tempMusicalEvents list
+                        tempMusicalEvents.Add(new MusicalEvent(timeTracker, tempRests[index], 0, 0.5f));
+
+                        //remove the rest from the tempRests list
+                        tempRests.RemoveAt(index);
+
+                        //increment the time tracker by the duration of the last event
+                        timeTracker += tempMusicalEvents[tempMusicalEvents.Count - 1].duration;
+
+                        debugWriter.WriteLine("Added Rest of duration " + tempMusicalEvents[tempMusicalEvents.Count - 1].duration + "! Time tracker at: " + timeTracker + "\n");
+                    }
+                    else
+                    {
+                        debugWriter.WriteLine("Doing Nothing. Time tracker at: " + timeTracker + "\n");
+                        //do nothing
+                    }
+
+
+                }
+
+                //add the motif to the arrayf
+                motifs[trueDepth] = tempMusicalEvents;
+
+                List<MusicalEvent> parseTempEvents = new List<MusicalEvent>(tempMusicalEvents);
+
+                //add our notes and rests in random order to the musical events list from the tempMusicalEvents list
+                while (parseTempEvents.Count > 0)
+                {
+                    int index = rnd.Next(0, parseTempEvents.Count);
+                    musicalEvents.Add(parseTempEvents[index]);
+                    parseTempEvents.RemoveAt(index);
+                }
+            }
+        }
+
+        private List<MusicalEvent> transformMotif(List<MusicalEvent> motif)
+        {
+            debugWriter.WriteLine("Starting of Transforming of Motif\n");
+
+            List<MusicalEvent> tempMotif = new List<MusicalEvent>(motif);
+
+            //generate a random number between 0 and 2
+            Random rnd = new Random();
+            int transform = rnd.Next(0, 3);
+
+            //if transform is 0, then we need to transpose the motif
+            if (transform == 0)
+            {
+                debugWriter.WriteLine("Transposing Motif\n");
+
+                //generate a random number between -7 and 7
+                int transpose = rnd.Next(-7, 8);
+
+                //transpose the motif
+                for (int i = 0; i < tempMotif.Count; i++)
+                {
+                    // create deep copy of the event
+                    MusicalEvent tempEvent = tempMotif[i];
+
+                    //transpose the pitch
+                    tempEvent.pitch = tempMotif[i].pitch * (float)Math.Pow(2, transpose / 12);
+
+                    //adjust the start time of the event
+                    tempEvent.startTime = timeTracker;
+
+                    //adjust the time tracker
+                    timeTracker += tempEvent.duration;
+
+                    debugWriter.WriteLine("Transposed Note by " + transpose + " semitones! Duration: " + tempEvent.duration + " Time tracker at: " + timeTracker + "\n");
+
+                    //replace the event in the motif
+                    tempMotif[i] = tempEvent;
+
+                }
+            }
+            else if (transform == 1) //if transform is 1, then we need to invert the motif
+            {
+                debugWriter.WriteLine("Inverting Motif\n");
+
+                //invert the motif
+                for (int i = 0; i < tempMotif.Count; i++)
+                {
+
+                    //create deep copy of the event
+                    MusicalEvent tempEvent = tempMotif[i];
+
+                    //invert the frequency around the root and prevent rests from being inverted
+                    if (tempEvent.pitch == 0)
+                    {
+
+                    }
+                    else
+                    {
+                        //invert the pitch around the root
+                        float freq = (float)Pitch.Create(rootNote, 4).Frequency;
+                        tempEvent.pitch = freq * 2 - tempMotif[i].pitch;
+                    }
+
+                    //adjust the start time of the event
+                    tempEvent.startTime = timeTracker;
+
+                    //adjust the time tracker
+                    timeTracker += tempEvent.duration;
+
+                    debugWriter.WriteLine("Inverted Note! Duration: " + tempEvent.duration + " Time tracker at: " + timeTracker + "\n");
+
+                    //replace the event in the motif
+                    tempMotif[i] = tempEvent;
+
+                }
+
+            }
+            else if (transform == 2) //if transform is 2, then we need to retrograde the motif
+            {
+                debugWriter.WriteLine("Retrograding Motif\n");
+
+                //retrograde the motif, by reversing the order of the events and making sure that the durations are correct
+                tempMotif.Reverse();
+
+                //adjust the start times of the events
+                for (int i = 0; i < tempMotif.Count; i++)
+                {
+                    //create deep copy of the event
+                    MusicalEvent tempEvent = tempMotif[i];
+
+                    //adjust the start time of the event
+                    tempEvent.startTime = timeTracker;
+
+                    //adjust the time tracker
+                    timeTracker += tempEvent.duration;
+
+                    debugWriter.WriteLine("Retrograded Note! Duration: " + tempEvent.duration + " Time tracker at: " + timeTracker + "\n");
+
+                    //replace the event in the motif
+                    tempMotif[i] = tempEvent;
+                }
+
             }
 
-
-            
-
+            transformationCount++;
+            return tempMotif;
         }
 
         private bool IsTerminalSegment(string lSystem, int index)
@@ -341,8 +548,6 @@ namespace LSystemsDemo
             // If we reach the end of the string without finding another 'F' at the same level, it's terminal.
             return depth == 0;
         }
-
-
 
         private void DrawLeaf(Graphics g, PointF position)
         {
@@ -437,15 +642,24 @@ namespace LSystemsDemo
 
         private void generateRTCMix()
         {
+            //first, sort the musical events list by start time, so that the events are in the correct order
+            musicalEvents.Sort((x, y) => x.startTime.CompareTo(y.startTime));
+
+            //generate the rtcmix code for each musical event into a new list of strings that we can write to a file
+            List<string> outputEvents = new List<string>();
+
+            foreach (MusicalEvent musicalEvent in musicalEvents)
+            {
+                outputEvents.Add(musicalEvent.outputRTCMix());
+            }
+
+            //generate the RTcmix file
             StringBuilder sb = new StringBuilder("../../../Output/RTCMixOutput - " + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt");
             StreamWriter writer = new StreamWriter(sb.ToString());
             writer.WriteLine("rtsetparams(44100,2)");
             writer.WriteLine("load(\"WAVETABLE\")");
             writer.WriteLine("ampenv = maketable(\"wave\", 1000, \"saw\")");
-            /*writer.WriteLine("freqenv = maketable(\"wave\", 1000, \"saw\")");
-            writer.WriteLine("amp = 0.5");
-            writer.WriteLine("freq = 440");*/
-            foreach (string s in musicalEvents)
+            foreach (string s in outputEvents)
             {
                 writer.WriteLine(s);
             }
@@ -474,9 +688,14 @@ namespace LSystemsDemo
         private void button2_Click(object sender, EventArgs e)
         {
             //opens a new form to view debug info
-            DebugForm debugForm = new DebugForm(bracketDepths, trueDepths);
+            DebugForm debugForm = new DebugForm(bracketDepths, trueDepths, transformationCount);
             debugForm.Show();
 
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            
         }
     }
 }

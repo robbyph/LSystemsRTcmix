@@ -14,7 +14,7 @@ namespace LSystemsDemo
     {
         private List<int> myBracketDepths;
 
-        public DebugForm(List<int> bracketDepths, List<int> trueBracketDepths)
+        public DebugForm(List<int> bracketDepths, List<int> trueBracketDepths, int transformationCount)
         {
             InitializeComponent();
             myBracketDepths = bracketDepths;
@@ -26,6 +26,7 @@ namespace LSystemsDemo
             {
                 lblTrueBracketDepth.Text += ("Node " + i + ": " + trueBracketDepths[i] + '\n');
             }
+            lblTransformationCount.Text = "Transformation Count: " + transformationCount;
         }
 
         private void DebugForm_Load(object sender, EventArgs e)

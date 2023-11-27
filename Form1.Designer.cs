@@ -242,6 +242,7 @@
             Controls.Add(label1);
             Name = "Form1";
             Text = "MainForm";
+            Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)presetsTrackbar).EndInit();
             ((System.ComponentModel.ISupportInitialize)seedTrackbar).EndInit();
             ((System.ComponentModel.ISupportInitialize)variabilityTrackbar).EndInit();
