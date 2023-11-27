@@ -15,7 +15,7 @@ namespace LSystemsDemo
         private PointF currentGraphicalPosition;
         private Stack<(PointF, float)> stack = new Stack<(PointF, float)>(); // Stack to save state
         private float timeTracker = 0;
-        private float[] durations = [0.25f, 0.5f, 1];
+        private float[] durations = [0.25f, 0.25f, 0.25f, 0.25f, 0.5f, 0.5f, 1];
         private int bracketDepth = 0;
         private int previousBracketDepth = 0;
         private List<int> bracketDepths = new List<int>();
@@ -344,7 +344,7 @@ namespace LSystemsDemo
                     float duration = durations[rnd.Next(0, durations.Length)];
 
                     //if random is less than 0.5, then we need to add a note, or add a note if its the first event
-                    if (random < 0.5 && tempNotes.Count > 0)
+                    if ((random < 0.5 && tempNotes.Count > 0) || tempNotes.Count == notes.Count)
                     {
                         debugWriter.WriteLine("Adding a note\n");
 
