@@ -722,6 +722,23 @@ namespace LSystemsDemo
 
                 tempMotif[index2] = tempEvent2;
 
+                //adjust the start time of all the motif events
+                for (int i = 0; i < tempMotif.Count; i++)
+                {
+                    //create deep copy of the event
+                    MusicalEvent tempEvent3 = tempMotif[i];
+
+                    //adjust the start time of the event
+                    tempEvent3.startTime = timeTracker;
+
+                    //adjust the time tracker
+                    timeTracker += tempEvent3.duration;
+
+                    debugWriter.WriteLine("Changed Note! Duration: " + tempEvent3.duration + " Time tracker at: " + timeTracker + "\n");
+
+                    tempMotif[i] = tempEvent3;
+                }
+
             }
 
 
