@@ -306,19 +306,8 @@ namespace LSystemsDemo
                 PitchClass notePC;
                 Pitch note;
 
-                if (i == 0)
-                {
-                    notePC = pitchClasses[0];
-                }
-                else if (i == numberOfNotes - 1)
-                {
-                    notePC = pitchClasses[0];
-                }
-                else
-                {
-                    notePC = pitchClasses[rnd.Next(0, pitchClasses.Count)];
-                }
-
+                notePC = pitchClasses[rnd.Next(0, pitchClasses.Count)];
+                
                 note = Pitch.Create(notePC, 4);
 
                 //add the note to the notes list
