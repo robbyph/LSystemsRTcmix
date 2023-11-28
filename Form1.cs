@@ -124,7 +124,10 @@ namespace LSystemsDemo
         private void GenerateButton_Click(object sender, EventArgs e)
         {
             sbDebug = new StringBuilder("../../../Output/DebugOutput - " + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt");
-            debugWriter = new StreamWriter(sbDebug.ToString());
+            if(debugWriter == null)
+            {
+                debugWriter = new StreamWriter(sbDebug.ToString());
+            }
             debugForm = new DebugForm(bracketDepths, trueDepths, transformationCount);
 
             //Get the value of the numeric up down for the amount of iterations
@@ -461,8 +464,8 @@ namespace LSystemsDemo
 
                 do
                 {
-                    //generate a random number between -8 and 8, but not 0, 1, -1, -6 or 6
-                    transpose = rnd.Next(-8, 9);
+                    //generate a random number between -12 and 12, but not 0, 1, -1, -6 or 6
+                    transpose = rnd.Next(-12, 13);
                 } while (transpose == 0 || transpose == 1 || transpose == -1 || transpose == -6 || transpose == 6);
 
                 //transpose the motif
@@ -471,8 +474,8 @@ namespace LSystemsDemo
                     // create deep copy of the event
                     MusicalEvent tempEvent = tempMotif[i];
 
-                    //transpose the pitch
-                    tempEvent.pitch = tempMotif[i].pitch * (float)Math.Pow(2, transpose / 12);
+                    //transpose the pitch by the given amount of semitones
+                    tempEvent.pitch = tempEvent.pitch * (float)Math.Pow(2, transpose / 12.0f);
 
                     //adjust the start time of the event
                     tempEvent.startTime = timeTracker;
