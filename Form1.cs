@@ -82,14 +82,11 @@ namespace LSystemsDemo
 
         public Form1()
         {
-
             InitializeComponent();
 
             //Initialize the graphics object
             graphics = pictureBox.CreateGraphics();
             pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-
-            
         }
 
         private void initializeSystem()
@@ -771,6 +768,12 @@ namespace LSystemsDemo
             //generate the rtcmix code for each musical event into a new list of strings that we can write to a file
             List<string> outputEvents = new List<string>();
 
+            float droneLength = musicalEvents[musicalEvents.Count - 1].startTime + musicalEvents[musicalEvents.Count - 1].duration;
+
+            //get the pitch and pitch class of the root note 2 octaves below middle C
+            Pitch rootPitch = Pitch.Create(rootNote, 2);
+            float rootFrequency = (float)rootPitch.Frequency;
+
             foreach (MusicalEvent musicalEvent in musicalEvents)
             {
                 outputEvents.Add(musicalEvent.outputRTCMix());
@@ -781,7 +784,9 @@ namespace LSystemsDemo
             StreamWriter writer = new StreamWriter(sb.ToString());
             writer.WriteLine("rtsetparams(44100,2)");
             writer.WriteLine("load(\"WAVETABLE\")");
-            writer.WriteLine("ampenv = maketable(\"wave\", 1000, \"saw\")");
+            writer.WriteLine("ampenv = maketable(\"wave\", 1000, \"saw20\")");
+            writer.WriteLine("droneenv = maketable(\"wave\", 1000, \"square10\")");
+            writer.WriteLine("WAVETABLE(0, " + droneLength.ToString() + ", 1700, " + rootFrequency + ", 0.5, droneenv)");
             foreach (string s in outputEvents)
             {
                 writer.WriteLine(s);
