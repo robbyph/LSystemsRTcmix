@@ -6,6 +6,7 @@ using Bach.Model;
 using System.Runtime.ExceptionServices;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Runtime.InteropServices;
+using LSystemsDemo;
 
 
 namespace LSystemsDemo
@@ -322,6 +323,7 @@ namespace LSystemsDemo
                 rests.Add(rest);
             }
 
+
             //check if we already have a motif at this depth. If we do, then we need to transform it, otherwise we need to add this motif to the array, at the index of the true depth
             if (motifs[trueDepth] != null)
             {
@@ -402,6 +404,35 @@ namespace LSystemsDemo
 
                 }
 
+                //after generating the motif, make sure the same note isn't played twice in a row to keep it from sounding too repetitive. 
+                for (int i = 0; i < tempMusicalEvents.Count - 1; i++)
+                {
+                    if (tempMusicalEvents[i].pitch == tempMusicalEvents[i + 1].pitch)
+                    {
+                        //generate a random note
+                        PitchClassCollection pitchClasses = scale.PitchClasses;
+
+                        PitchClass notePC;
+                        Pitch note;
+
+                        if (i == tempMusicalEvents.Count - 1)
+                        {
+                            notePC = pitchClasses[0];
+                        }
+                        else
+                        {
+                            notePC = pitchClasses[rnd.Next(0, pitchClasses.Count)];
+                        }
+
+                        note = Pitch.Create(notePC, 4);
+
+                        //change the pitch of the note
+                        tempMusicalEvents[i + 1].pitch = (float)note.Frequency;
+
+                        debugWriter.WriteLine("Changed Note! Duration: " + tempMusicalEvents[i + 1].duration + " Time tracker at: " + timeTracker + "\n");
+                    }
+                }
+
                 //add the motif to the arrayf
                 motifs[trueDepth] = tempMusicalEvents;
 
@@ -457,63 +488,41 @@ namespace LSystemsDemo
 
                 }
             }
-            else if (transform == 1) //if transform is 1, then we need to invert the motif
+            else if (transform == 1) //if transform is 1, we will add a note to the motif
             {
-                debugWriter.WriteLine("Inverting Motif\n");
+                debugWriter.WriteLine("Adding a note to the motif\n");
 
-                //invert the motif
+                //generate a random note
+                ScaleFormula scaleFormula = Registry.ScaleFormulas["Major"];
+                Scale scale = new Scale(rootNote, scaleFormula);
+                PitchClassCollection pitchClasses = scale.PitchClasses;
+
+                PitchClass notePC;
+                Pitch note;
+
+                if (tempMotif.Count == 0)
+                {
+                    notePC = pitchClasses[0];
+                }
+                else if (tempMotif.Count == 1)
+                {
+                    notePC = pitchClasses[0];
+                }
+                else
+                {
+                    notePC = pitchClasses[rnd.Next(0, pitchClasses.Count)];
+                }
+
+                note = Pitch.Create(notePC, 4);
+
+                //add the note to the motif
+                tempMotif.Add(new MusicalEvent(timeTracker, durations[rnd.Next(0, durations.Length - 1)], (float)note.Frequency, 0.5f));
+
+                //adjust the start time of all the motif events
                 for (int i = 0; i < tempMotif.Count; i++)
                 {
-
                     //create deep copy of the event
                     MusicalEvent tempEvent = tempMotif[i];
-
-                    //invert the frequency around the root and prevent rests from being inverted
-                    if (tempEvent.pitch == 0 || tempEvent.amplitude == 0)
-                    {
-
-                    }
-                    else
-                    {
-                        //invert the interval around the root
-                        float rootFrequency = (float)Pitch.Create(rootNote, 4).Frequency;
-                        //tempEvent.pitch = freq * 2 - tempMotif[i].pitch;
-
-                        // Calculate the ratio of the note's frequency to the root's frequency
-                        float ratio = tempEvent.pitch / rootFrequency;
-
-                        // Invert the ratio to find the interval below the root
-                        float invertedRatio = 1 / ratio;
-
-                        // Multiply the root's frequency by the inverted ratio to get the frequency of the inverted note
-                        float invertedNoteFrequency = rootFrequency * invertedRatio;
-
-                        tempEvent.pitch = invertedNoteFrequency;
-
-                        /*float midiNoteNumber = (float)(69 + 12 * (Math.Log(tempEvent.pitch / 440, 2)));
-                        Pitch rootPitch = Pitch.Create(rootNote, 4);
-                        float rootMidiNoteNumber = (float)(69 + 12 * (Math.Log((float)rootPitch.Frequency / 440, 2)));
-                        float interval = Math.Abs(midiNoteNumber - rootMidiNoteNumber);
-
-                        float newMidiNoteNumber = 0;
-
-
-                        if (midiNoteNumber > rootMidiNoteNumber) //if the note is above the root
-                        {
-                            newMidiNoteNumber = rootMidiNoteNumber - (interval * 2);
-
-                        }
-                        else if (midiNoteNumber < rootMidiNoteNumber) //if the note is below the root
-                        {
-                            newMidiNoteNumber = rootMidiNoteNumber + (interval * 2);
-                        }else 
-                        {
-                            //do nothing
-                        }*/
-
-
-
-                    }
 
                     //adjust the start time of the event
                     tempEvent.startTime = timeTracker;
@@ -521,13 +530,10 @@ namespace LSystemsDemo
                     //adjust the time tracker
                     timeTracker += tempEvent.duration;
 
-                    debugWriter.WriteLine("Inverted Note! Duration: " + tempEvent.duration + " Time tracker at: " + timeTracker + "\n");
+                    debugWriter.WriteLine("Added Note! Duration: " + tempEvent.duration + " Time tracker at: " + timeTracker + "\n");
 
-                    //replace the event in the motif
                     tempMotif[i] = tempEvent;
-
                 }
-
             }
             else if (transform == 2) //if transform is 2, then we need to retrograde the motif
             {
@@ -573,20 +579,24 @@ namespace LSystemsDemo
                 PitchClass notePC;
                 Pitch note;
 
-                if (index == 0)
+                do
                 {
-                    notePC = pitchClasses[0];
-                }
-                else if (index == tempMotif.Count - 1)
-                {
-                    notePC = pitchClasses[0];
-                }
-                else
-                {
-                    notePC = pitchClasses[rnd.Next(0, pitchClasses.Count)];
-                }
+                    if (index == 0)
+                    {
+                        notePC = pitchClasses[0];
+                    }
+                    else if (index == tempMotif.Count - 1)
+                    {
+                        notePC = pitchClasses[0];
+                    }
+                    else
+                    {
+                        notePC = pitchClasses[rnd.Next(0, pitchClasses.Count)];
+                    }
 
-                note = Pitch.Create(notePC, 4);
+                    note = Pitch.Create(notePC, 4);
+
+                } while (tempEvent.pitch == note.Frequency); //making sure that the new note is different from the original note
 
                 //change the pitch of the note
                 tempEvent.pitch = (float)note.Frequency;
@@ -819,3 +829,74 @@ namespace LSystemsDemo
         }
     }
 }
+
+/*
+// Unused inversion code
+debugWriter.WriteLine("Inverting Motif\n");
+
+//invert the motif
+for (int i = 0; i < tempMotif.Count; i++)
+{
+
+    //create deep copy of the event
+    MusicalEvent tempEvent = tempMotif[i];
+
+    //invert the frequency around the root and prevent rests from being inverted
+    if (tempEvent.pitch == 0 || tempEvent.amplitude == 0)
+    {
+
+    }
+    else
+    {
+        //invert the interval around the root
+        float rootFrequency = (float)Pitch.Create(rootNote, 4).Frequency;
+        //tempEvent.pitch = freq * 2 - tempMotif[i].pitch;
+
+        // Calculate the ratio of the note's frequency to the root's frequency
+        float ratio = tempEvent.pitch / rootFrequency;
+
+        // Invert the ratio to find the interval below the root
+        float invertedRatio = 1 / ratio;
+
+        // Multiply the root's frequency by the inverted ratio to get the frequency of the inverted note
+        float invertedNoteFrequency = rootFrequency * invertedRatio;
+
+        tempEvent.pitch = invertedNoteFrequency;
+
+        float midiNoteNumber = (float)(69 + 12 * (Math.Log(tempEvent.pitch / 440, 2)));
+        Pitch rootPitch = Pitch.Create(rootNote, 4);
+        float rootMidiNoteNumber = (float)(69 + 12 * (Math.Log((float)rootPitch.Frequency / 440, 2)));
+        float interval = Math.Abs(midiNoteNumber - rootMidiNoteNumber);
+
+        float newMidiNoteNumber = 0;
+
+
+        if (midiNoteNumber > rootMidiNoteNumber) //if the note is above the root
+        {
+            newMidiNoteNumber = rootMidiNoteNumber - (interval * 2);
+
+        }
+        else if (midiNoteNumber < rootMidiNoteNumber) //if the note is below the root
+        {
+            newMidiNoteNumber = rootMidiNoteNumber + (interval * 2);
+        }else 
+        {
+            //do nothing
+        }
+
+
+
+    }
+
+    //adjust the start time of the event
+    tempEvent.startTime = timeTracker;
+
+    //adjust the time tracker
+    timeTracker += tempEvent.duration;
+
+    debugWriter.WriteLine("Inverted Note! Duration: " + tempEvent.duration + " Time tracker at: " + timeTracker + "\n");
+
+    //replace the event in the motif
+    tempMotif[i] = tempEvent;
+
+} */
