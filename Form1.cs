@@ -453,7 +453,7 @@ namespace LSystemsDemo
 
             //generate a random number between 0 and 2
             Random rnd = new Random();
-            int transform = rnd.Next(0, 4);
+            int transform = rnd.Next(0, 5);
 
             //if transform is 0, then we need to transpose the motif
             if (transform == 0)
@@ -620,7 +620,36 @@ namespace LSystemsDemo
                     tempMotif[i] = tempEvent2;
                 }
             }
+            else if (transform == 4) //if transform is 4, we will remove a note from the transformed motif
+            {
+                debugWriter.WriteLine("Removing a note from the motif\n");
 
+                //generate a random index between 0 and the number of notes in the motif
+                int index = rnd.Next(0, tempMotif.Count);
+
+                //remove the note at the index
+                MusicalEvent tempEvent = tempMotif[index];
+
+                //remove the note from the motif
+                tempMotif.RemoveAt(index);
+
+                //adjust the start time of all the motif events
+                for (int i = 0; i < tempMotif.Count; i++)
+                {
+                    //create deep copy of the event
+                    MusicalEvent tempEvent2 = tempMotif[i];
+
+                    //adjust the start time of the event
+                    tempEvent2.startTime = timeTracker;
+
+                    //adjust the time tracker
+                    timeTracker += tempEvent2.duration;
+
+                    debugWriter.WriteLine("Removed Note! Duration: " + tempEvent2.duration + " Time tracker at: " + timeTracker + "\n");
+
+                    tempMotif[i] = tempEvent2;
+                }
+            }
             transformationCount++;
             return tempMotif;
         }
@@ -773,6 +802,13 @@ namespace LSystemsDemo
             //get the pitch and pitch class of the root note 2 octaves below middle C
             Pitch rootPitch = Pitch.Create(rootNote, 2);
             float rootFrequency = (float)rootPitch.Frequency;
+
+            //force the pitch of the last note to be the root pitch, in the middle octave
+            Pitch finalPitch = Pitch.Create(rootNote, 4);
+            float finalFrequency = (float)finalPitch.Frequency;
+            musicalEvents[musicalEvents.Count - 1].pitch = finalFrequency;
+
+
 
             foreach (MusicalEvent musicalEvent in musicalEvents)
             {
