@@ -26,6 +26,7 @@ namespace LSystemsDemo
         private List<MusicalEvent> musicalEvents = new List<MusicalEvent>();
         private int transformationCount = 0;
         private PitchClass rootNote = PitchClass.C;
+        DebugForm debugForm;
 
         private StringBuilder sbDebug;
         private StreamWriter debugWriter;
@@ -80,24 +81,18 @@ namespace LSystemsDemo
 
         public Form1()
         {
+
             InitializeComponent();
 
             //Initialize the graphics object
             graphics = pictureBox.CreateGraphics();
             pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+
+            
         }
 
-        private void GenerateButton_Click(object sender, EventArgs e)
+        private void initializeSystem()
         {
-
-            sbDebug = new StringBuilder("../../../Output/DebugOutput - " + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt");
-            debugWriter = new StreamWriter(sbDebug.ToString());
-
-
-            //Get the value of the numeric up down for the amount of iterations
-            int iterations = (int)IterationsNumericUpDown.Value;
-            int preset = presetSelect;
-
             //clear the musical events list
             musicalEvents.Clear();
 
@@ -108,6 +103,22 @@ namespace LSystemsDemo
             trueDepth = 0;
 
             timeTracker = 0;
+
+            //clear the motifs list
+            motifs = new List<MusicalEvent>[100];
+        }
+
+        private void GenerateButton_Click(object sender, EventArgs e)
+        {
+            sbDebug = new StringBuilder("../../../Output/DebugOutput - " + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt");
+            debugWriter = new StreamWriter(sbDebug.ToString());
+            debugForm = new DebugForm(bracketDepths, trueDepths, transformationCount);
+
+            //Get the value of the numeric up down for the amount of iterations
+            int iterations = (int)IterationsNumericUpDown.Value;
+            int preset = presetSelect;
+
+            initializeSystem();
 
             try
             {
@@ -130,7 +141,7 @@ namespace LSystemsDemo
 
             generateRTCMix();
 
-            debugWriter.Close();
+            
         }
 
         private string GenerateLSystem(string axiom, int iterations)
@@ -543,7 +554,8 @@ namespace LSystemsDemo
                     tempMotif[i] = tempEvent;
                 }
 
-            }else if (transform == 3) //if transform is 3, we will simply change one of the notes in the motif
+            }
+            else if (transform == 3) //if transform is 3, we will simply change one of the notes in the motif
             {
                 debugWriter.WriteLine("Changing a note in the motif\n");
 
@@ -649,7 +661,10 @@ namespace LSystemsDemo
             g.FillEllipse(Brushes.Green, position.X - 5, position.Y - 5, 10, 10);
 
             //label the leaf with its order in the tree
-            g.DrawString(trueDepth.ToString(), new Font("Arial", 8), Brushes.Black, position.X - 5, position.Y - 5);
+            if(debugForm.getDebugMode())
+            {
+                g.DrawString(trueDepth.ToString(), new Font("Arial", 8), Brushes.Black, position.X - 5, position.Y - 5);
+            }
         }
 
         private bool isDragging = false;
@@ -673,6 +688,7 @@ namespace LSystemsDemo
 
                 graphics.TranslateTransform(deltaX, deltaY);
                 graphics.Clear(Color.White);
+                initializeSystem();
                 RenderLSystem(lastGeneratedLSystem);
                 lastPosition = e.Location; // Added to update lastPosition
             }
@@ -709,6 +725,7 @@ namespace LSystemsDemo
             //pictureBox.Invalidate();
             //clear the graphics object
             graphics.Clear(Color.White);
+            initializeSystem();
             RenderLSystem(lastGeneratedLSystem);
         }
 
@@ -724,6 +741,7 @@ namespace LSystemsDemo
         {
             branchLength = branchLengthTrackbar.Value;
             graphics.Clear(Color.White);
+            initializeSystem();
             RenderLSystem(lastGeneratedLSystem);
         }
 
@@ -731,6 +749,7 @@ namespace LSystemsDemo
         {
             branchAngle = branchAngleTrackbar.Value;
             graphics.Clear(Color.White);
+            initializeSystem();
             RenderLSystem(lastGeneratedLSystem);
         }
 
@@ -767,6 +786,7 @@ namespace LSystemsDemo
             myPen = new Pen(Color.Black, branchWidth);
 
             graphics.Clear(Color.White);
+            initializeSystem();
             RenderLSystem(lastGeneratedLSystem);
         }
 
@@ -776,20 +796,26 @@ namespace LSystemsDemo
             string lSystem = GenerateLSystem(selectedPreset.axiom, (int)IterationsNumericUpDown.Value);
             lastGeneratedLSystem = lSystem;
             graphics.Clear(Color.White);
+            initializeSystem();
             RenderLSystem(lastGeneratedLSystem);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             //opens a new form to view debug info
-            DebugForm debugForm = new DebugForm(bracketDepths, trueDepths, transformationCount);
+            debugForm = new DebugForm(bracketDepths, trueDepths, transformationCount);
             debugForm.Show();
 
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            
+
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            debugWriter.Close();
         }
     }
 }
