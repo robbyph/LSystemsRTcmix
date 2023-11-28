@@ -139,7 +139,7 @@ namespace LSystemsDemo
 
             generateRTCMix();
 
-            
+
         }
 
         private string GenerateLSystem(string axiom, int iterations)
@@ -412,14 +412,8 @@ namespace LSystemsDemo
                         PitchClass notePC;
                         Pitch note;
 
-                        if (i == tempMusicalEvents.Count - 1)
-                        {
-                            notePC = pitchClasses[0];
-                        }
-                        else
-                        {
-                            notePC = pitchClasses[rnd.Next(0, pitchClasses.Count)];
-                        }
+
+                        notePC = pitchClasses[rnd.Next(0, pitchClasses.Count)];
 
                         note = Pitch.Create(notePC, 4);
 
@@ -453,10 +447,10 @@ namespace LSystemsDemo
 
             //generate a random number between 0 and 2
             Random rnd = new Random();
-            int transform = rnd.Next(0, 6);
+            int transform = rnd.Next(0, 12);
 
-            //if transform is 0, then we need to transpose the motif
-            if (transform == 0)
+            //if transform is 0 - 3, then we need to transpose the motif
+            if (transform == 0 || transform == 1 || transform == 2 || transform == 3)
             {
                 debugWriter.WriteLine("Transposing Motif\n");
 
@@ -485,7 +479,7 @@ namespace LSystemsDemo
 
                 }
             }
-            else if (transform == 1) //if transform is 1, we will add a note to the motif
+            else if (transform == 4 || transform == 5) //if transform is 4 or 5, we will add a note to the motif
             {
                 debugWriter.WriteLine("Adding a note to the motif\n");
 
@@ -532,7 +526,7 @@ namespace LSystemsDemo
                     tempMotif[i] = tempEvent;
                 }
             }
-            else if (transform == 2) //if transform is 2, then we need to retrograde the motif
+            else if (transform == 6) //if transform is 6, then we need to retrograde the motif
             {
                 debugWriter.WriteLine("Retrograding Motif\n");
 
@@ -558,7 +552,7 @@ namespace LSystemsDemo
                 }
 
             }
-            else if (transform == 3) //if transform is 3, we will simply change one of the notes in the motif
+            else if (transform == 7 || transform == 8) //if transform is 7 or 8, we will simply change one of the notes in the motif
             {
                 debugWriter.WriteLine("Changing a note in the motif\n");
 
@@ -620,7 +614,7 @@ namespace LSystemsDemo
                     tempMotif[i] = tempEvent2;
                 }
             }
-            else if (transform == 4) //if transform is 4, we will remove a note from the transformed motif
+            else if (transform == 9) //if transform is 9, we will remove a note from the transformed motif
             {
                 debugWriter.WriteLine("Removing a note from the motif\n");
 
@@ -649,7 +643,8 @@ namespace LSystemsDemo
 
                     tempMotif[i] = tempEvent2;
                 }
-            } else if (transform == 5) //if the transform is 5, change 2 notes in the motif
+            }
+            else if (transform == 10 || transform == 11) //if the transform is 10 or 11, change 2 notes in the motif
             {
                 debugWriter.WriteLine("Changing 2 notes in the motif\n");
 
@@ -777,7 +772,7 @@ namespace LSystemsDemo
             g.FillEllipse(Brushes.Green, position.X - 5, position.Y - 5, 10, 10);
 
             //label the leaf with its order in the tree
-            if(debugForm.getDebugMode())
+            if (debugForm.getDebugMode())
             {
                 g.DrawString(trueDepth.ToString(), new Font("Arial", 8), Brushes.Black, position.X - 5, position.Y - 5);
             }
