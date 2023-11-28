@@ -29,6 +29,7 @@ namespace LSystemsDemo
         private PitchClass rootNote = PitchClass.C;
         private ScaleFormula scaleFormula = Registry.ScaleFormulas["Major"];
         DebugForm debugForm;
+        SolidBrush leafBrush = new SolidBrush(Color.Green);
 
         private StringBuilder sbDebug;
         private StreamWriter debugWriter;
@@ -794,7 +795,7 @@ namespace LSystemsDemo
         private void DrawLeaf(Graphics g, PointF position)
         {
             // Draw a leaf using an ellipse or a custom shape
-            g.FillEllipse(Brushes.Green, position.X - 5, position.Y - 5, 10, 10);
+            g.FillEllipse(leafBrush, position.X - 5, position.Y - 5, 8, 17);
 
             //label the leaf with its order in the tree
             if (debugForm.getDebugMode())
@@ -980,6 +981,7 @@ namespace LSystemsDemo
             //get the pitch class of the root note at octave 4
             PitchClass rootPC = PitchClass.Parse(root);
             rootNote = rootPC;
+
 
         }
 
