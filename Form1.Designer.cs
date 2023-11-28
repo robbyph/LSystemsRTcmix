@@ -46,8 +46,8 @@
             label7 = new Label();
             button2 = new Button();
             label8 = new Label();
-            comboBox1 = new ComboBox();
-            comboBox2 = new ComboBox();
+            rootComboBox = new ComboBox();
+            scaleComboBox = new ComboBox();
             label9 = new Label();
             ((System.ComponentModel.ISupportInitialize)presetsTrackbar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)seedTrackbar).BeginInit();
@@ -234,21 +234,22 @@
             label8.TabIndex = 18;
             label8.Text = "Root";
             // 
-            // comboBox1
+            // rootComboBox
             // 
-            comboBox1.FormattingEnabled = true;
-            comboBox1.Location = new Point(1066, 40);
-            comboBox1.Name = "comboBox1";
-            comboBox1.Size = new Size(121, 23);
-            comboBox1.TabIndex = 19;
+            rootComboBox.FormattingEnabled = true;
+            rootComboBox.Items.AddRange(new object[] { "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#" });
+            rootComboBox.Location = new Point(1066, 40);
+            rootComboBox.Name = "rootComboBox";
+            rootComboBox.Size = new Size(121, 23);
+            rootComboBox.TabIndex = 19;
             // 
-            // comboBox2
+            // scaleComboBox
             // 
-            comboBox2.FormattingEnabled = true;
-            comboBox2.Location = new Point(1066, 115);
-            comboBox2.Name = "comboBox2";
-            comboBox2.Size = new Size(121, 23);
-            comboBox2.TabIndex = 21;
+            scaleComboBox.FormattingEnabled = true;
+            scaleComboBox.Location = new Point(1066, 115);
+            scaleComboBox.Name = "scaleComboBox";
+            scaleComboBox.Size = new Size(121, 23);
+            scaleComboBox.TabIndex = 21;
             // 
             // label9
             // 
@@ -256,18 +257,18 @@
             label9.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
             label9.Location = new Point(1066, 87);
             label9.Name = "label9";
-            label9.Size = new Size(50, 25);
+            label9.Size = new Size(56, 25);
             label9.TabIndex = 20;
-            label9.Text = "Root";
+            label9.Text = "Scale";
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1219, 673);
-            Controls.Add(comboBox2);
+            Controls.Add(scaleComboBox);
             Controls.Add(label9);
-            Controls.Add(comboBox1);
+            Controls.Add(rootComboBox);
             Controls.Add(label8);
             Controls.Add(button2);
             Controls.Add(branchWidthTrackbar);
@@ -321,8 +322,8 @@
         private Label label7;
         private Button button2;
         private Label label8;
-        private ComboBox comboBox1;
-        private ComboBox comboBox2;
+        private ComboBox rootComboBox;
+        private ComboBox scaleComboBox;
         private Label label9;
     }
 }

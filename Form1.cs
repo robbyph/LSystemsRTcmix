@@ -87,6 +87,20 @@ namespace LSystemsDemo
             //Initialize the graphics object
             graphics = pictureBox.CreateGraphics();
             pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+
+            //populate scale combo boxes
+            foreach (var formula in Registry.ScaleFormulas)
+            {
+                scaleComboBox.Items.Add(formula.Name);
+            }
+
+            //set the default scale to major
+            scaleComboBox.SelectedIndex = 25;
+            rootComboBox.SelectedIndex = 3;
+
+            debugForm = new DebugForm(bracketDepths, trueDepths, transformationCount);
+            sbDebug = new StringBuilder("../../../Output/DebugOutput - " + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt");
+            debugWriter = new StreamWriter(sbDebug.ToString());
         }
 
         private void initializeSystem()
@@ -911,7 +925,7 @@ namespace LSystemsDemo
             writer.WriteLine("rtsetparams(44100,2)");
             writer.WriteLine("load(\"WAVETABLE\")");
             writer.WriteLine("ampenv = maketable(\"wave\", 1000, \"saw20\")");
-            writer.WriteLine("droneenv = maketable(\"wave\", 1000, \"square10\")");
+            writer.WriteLine("droneenv = maketable(\"wave\", 1000, \"square8\")");
             writer.WriteLine("WAVETABLE(0, " + droneLength.ToString() + ", 1700, " + rootFrequency + ", 0.5, droneenv)");
             foreach (string s in outputEvents)
             {
