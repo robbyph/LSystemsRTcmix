@@ -468,8 +468,13 @@ namespace LSystemsDemo
             {
                 debugWriter.WriteLine("Transposing Motif\n");
 
-                //generate a random number between -7 and 7
-                int transpose = rnd.Next(-7, 8);
+                int transpose;
+
+                do
+                {
+                    //generate a random number between -7 and 7
+                    transpose = rnd.Next(-7, 8);
+                } while (transpose != 0 && transpose != 1 && transpose != -1);
 
                 //transpose the motif
                 for (int i = 0; i < tempMotif.Count; i++)
