@@ -27,6 +27,7 @@ namespace LSystemsDemo
         private List<MusicalEvent> musicalEvents = new List<MusicalEvent>();
         private int transformationCount = 0;
         private PitchClass rootNote = PitchClass.C;
+        private ScaleFormula scaleFormula = Registry.ScaleFormulas["Major"];
         DebugForm debugForm;
 
         private StringBuilder sbDebug;
@@ -282,7 +283,6 @@ namespace LSystemsDemo
             int numberOfRests = rnd.Next(1, 3);
 
             //Get our pitch set
-            ScaleFormula scaleFormula = Registry.ScaleFormulas["Major"];
             Scale scale = new Scale(rootNote, scaleFormula);
 
             List<PitchClass> pc = new List<PitchClass>();
@@ -461,9 +461,9 @@ namespace LSystemsDemo
 
                 do
                 {
-                    //generate a random number between -7 and 7
-                    transpose = rnd.Next(-7, 8);
-                } while (transpose != 0 && transpose != 1 && transpose != -1);
+                    //generate a random number between -8 and 8, but not 0, 1, -1, -6 or 6
+                    transpose = rnd.Next(-8, 9);
+                } while (transpose == 0 || transpose == 1 || transpose == -1 || transpose == -6 || transpose == 6);
 
                 //transpose the motif
                 for (int i = 0; i < tempMotif.Count; i++)
@@ -492,7 +492,6 @@ namespace LSystemsDemo
                 debugWriter.WriteLine("Adding a note to the motif\n");
 
                 //generate a random note
-                ScaleFormula scaleFormula = Registry.ScaleFormulas["Major"];
                 Scale scale = new Scale(rootNote, scaleFormula);
                 PitchClassCollection pitchClasses = scale.PitchClasses;
 
@@ -571,7 +570,6 @@ namespace LSystemsDemo
                 MusicalEvent tempEvent = tempMotif[index];
 
                 //generate a random note
-                ScaleFormula scaleFormula = Registry.ScaleFormulas["Major"];
                 Scale scale = new Scale(rootNote, scaleFormula);
                 PitchClassCollection pitchClasses = scale.PitchClasses;
 
@@ -665,7 +663,6 @@ namespace LSystemsDemo
                 MusicalEvent tempEvent2 = tempMotif[index2];
 
                 //generate a random note
-                ScaleFormula scaleFormula = Registry.ScaleFormulas["Major"];
                 Scale scale = new Scale(rootNote, scaleFormula);
                 PitchClassCollection pitchClasses = scale.PitchClasses;
 
@@ -981,6 +978,15 @@ namespace LSystemsDemo
             PitchClass rootPC = PitchClass.Parse(root);
             rootNote = rootPC;
 
+        }
+
+        private void scaleComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //get the scale from the combo box
+            string scale = scaleComboBox.SelectedItem.ToString();
+
+            //get the scale formula from the registry
+            scaleFormula = Registry.ScaleFormulas[scale];
         }
     }
 }

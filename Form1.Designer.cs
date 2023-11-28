@@ -251,6 +251,7 @@
             scaleComboBox.Name = "scaleComboBox";
             scaleComboBox.Size = new Size(121, 23);
             scaleComboBox.TabIndex = 21;
+            scaleComboBox.SelectedIndexChanged += scaleComboBox_SelectedIndexChanged;
             // 
             // label9
             // 
