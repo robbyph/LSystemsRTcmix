@@ -453,7 +453,7 @@ namespace LSystemsDemo
 
             //generate a random number between 0 and 2
             Random rnd = new Random();
-            int transform = rnd.Next(0, 5);
+            int transform = rnd.Next(0, 6);
 
             //if transform is 0, then we need to transpose the motif
             if (transform == 0)
@@ -649,7 +649,87 @@ namespace LSystemsDemo
 
                     tempMotif[i] = tempEvent2;
                 }
+            } else if (transform == 5) //if the transform is 5, change 2 notes in the motif
+            {
+                debugWriter.WriteLine("Changing 2 notes in the motif\n");
+
+                //generate a random index between 0 and the number of notes in the motif
+                int index1 = rnd.Next(0, tempMotif.Count);
+                int index2 = rnd.Next(0, tempMotif.Count);
+
+                //change the note at the index
+                MusicalEvent tempEvent1 = tempMotif[index1];
+                MusicalEvent tempEvent2 = tempMotif[index2];
+
+                //generate a random note
+                ScaleFormula scaleFormula = Registry.ScaleFormulas["Major"];
+                Scale scale = new Scale(rootNote, scaleFormula);
+                PitchClassCollection pitchClasses = scale.PitchClasses;
+
+                PitchClass notePC;
+                Pitch note;
+
+                do
+                {
+                    if (index1 == 0)
+                    {
+                        notePC = pitchClasses[0];
+                    }
+                    else if (index1 == tempMotif.Count - 1)
+                    {
+                        notePC = pitchClasses[0];
+                    }
+                    else
+                    {
+                        notePC = pitchClasses[rnd.Next(0, pitchClasses.Count)];
+                    }
+
+                    note = Pitch.Create(notePC, 4);
+
+                } while (tempEvent1.pitch == note.Frequency); //making sure that the new note is different from the original note
+
+                //change the pitch of the note
+                tempEvent1.pitch = (float)note.Frequency;
+
+                debugWriter.WriteLine(
+                                       "Changed Note! Duration: " + tempEvent1.duration + " Time tracker at: " + timeTracker + "\n");
+
+                tempMotif[index1] = tempEvent1;
+
+
+                PitchClass notePC2;
+                Pitch note2;
+
+                do
+                {
+                    if (index2 == 0)
+                    {
+                        notePC2 = pitchClasses[0];
+                    }
+                    else if (index2 == tempMotif.Count - 1)
+                    {
+                        notePC2 = pitchClasses[0];
+                    }
+                    else
+                    {
+                        notePC2 = pitchClasses[rnd.Next(0, pitchClasses.Count)];
+                    }
+
+                    note2 = Pitch.Create(notePC2, 4);
+
+                } while (tempEvent2.pitch == note2.Frequency); //making sure that the new note is different from the original note
+
+                //change the pitch of the note
+                tempEvent2.pitch = (float)note2.Frequency;
+
+                debugWriter.WriteLine(
+                                                          "Changed Note! Duration: " + tempEvent2.duration + " Time tracker at: " + timeTracker + "\n");
+
+                tempMotif[index2] = tempEvent2;
+
             }
+
+
             transformationCount++;
             return tempMotif;
         }
@@ -807,8 +887,6 @@ namespace LSystemsDemo
             Pitch finalPitch = Pitch.Create(rootNote, 4);
             float finalFrequency = (float)finalPitch.Frequency;
             musicalEvents[musicalEvents.Count - 1].pitch = finalFrequency;
-
-
 
             foreach (MusicalEvent musicalEvent in musicalEvents)
             {
