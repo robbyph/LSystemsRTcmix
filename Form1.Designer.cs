@@ -242,6 +242,7 @@
             rootComboBox.Name = "rootComboBox";
             rootComboBox.Size = new Size(121, 23);
             rootComboBox.TabIndex = 19;
+            rootComboBox.SelectedValueChanged += rootComboBox_SelectedValueChanged;
             // 
             // scaleComboBox
             // 

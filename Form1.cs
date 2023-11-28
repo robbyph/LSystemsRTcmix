@@ -307,7 +307,7 @@ namespace LSystemsDemo
                 Pitch note;
 
                 notePC = pitchClasses[rnd.Next(0, pitchClasses.Count)];
-                
+
                 note = Pitch.Create(notePC, 4);
 
                 //add the note to the notes list
@@ -908,6 +908,11 @@ namespace LSystemsDemo
             float finalFrequency = (float)finalPitch.Frequency;
             musicalEvents[musicalEvents.Count - 1].pitch = finalFrequency;
 
+            //force the pitch of the first note to be the root pitch, in the middle octave
+            Pitch firstPitch = Pitch.Create(rootNote, 4);
+            float firstFrequency = (float)firstPitch.Frequency;
+            musicalEvents[0].pitch = firstFrequency;
+
             foreach (MusicalEvent musicalEvent in musicalEvents)
             {
                 outputEvents.Add(musicalEvent.outputRTCMix());
@@ -965,6 +970,17 @@ namespace LSystemsDemo
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             debugWriter.Close();
+        }
+
+        private void rootComboBox_SelectedValueChanged(object sender, EventArgs e)
+        {
+            //get the root note from the combo box
+            string root = rootComboBox.SelectedItem.ToString();
+
+            //get the pitch class of the root note at octave 4
+            PitchClass rootPC = PitchClass.Parse(root);
+            rootNote = rootPC;
+
         }
     }
 }
